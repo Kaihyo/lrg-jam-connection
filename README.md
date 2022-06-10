@@ -1,1 +1,1 @@
-# CONNECTION - Game Jam organized Lost Relic Games (2022)
+# CONNECTION - Game Jam organized by Lost Relic Games (2022)
