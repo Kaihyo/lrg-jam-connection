@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 using UnityEngine;
 using UnityEngine.UI;
      
@@ -31,10 +27,11 @@ public class LineBetweenObjects : MonoBehaviour
             object2 = aux;
         }
     }
+
     // Update is called once per frame
     void Update()
     {
-        if (object1.gameObject.activeSelf && object2.gameObject.activeSelf)
+        if (object1 != null && object1.gameObject.activeSelf &&  object2 != null && object2.gameObject.activeSelf)
         {
             rectTransform.localPosition = (object1.localPosition + object2.localPosition) / 2;
             Vector3 dif = object2.localPosition - object1.localPosition;

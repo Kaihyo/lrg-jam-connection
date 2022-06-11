@@ -1,72 +1,85 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+    // (Axel) Probablement quelque chose du genre 1 min IG = 0.5s IRL
+    [SerializeField] private float _minToRealTime = 0.5f;
 
-    static public Action OnHoursChanged;
-    static public Action OnMinutesChanged;
+    private float _timer;
 
-    static public int Hours {  get; private set; }
-    static public int Minutes {  get; private set; }
-    
-    private float timer;
-    
-    //Probbablement quelque chose du genre 1 min IG = 0.5s IRL 
-    public float minToRealTime = 0.5f;
+    public static Action OnMinutesChanged;
+    public static Action OnHoursChanged;
 
-    // Start is called before the first frame update
-    void Start()
+    public static bool IsRunning { get; private set; }
+    public static int Minutes { get; private set; }
+    public static int Hours { get; private set; }
+
+    private void Start()
     {
-        timer = Math.Abs(minToRealTime);
-        Minutes = 0;
-        Hours = 0;
+        StartTimer();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        timer -= Time.deltaTime;
-        
-        if (timer <= 0)
+        ProcessTime();
+    }
+
+    // (Manu) Je le passe en fonction si jamais on veut qu'un composant externe ait la main sur le lancement du temps
+    public void StartTimer()
+    {
+        _timer = Math.Abs(_minToRealTime);
+        Minutes = 0;
+        Hours = 0;
+        IsRunning = true;
+    }
+
+    // (Manu) Si on veut mettre le jeu en pause sans modifier _minToRealTime
+    public void SetTimerRunning(bool isRunning)
+    {
+        IsRunning = isRunning;
+    }
+
+    private void ProcessTime()
+    {
+        // (Manu) J'étais pas sûr du comportement qu'on voulait pour le _minToRealTime
+        // Dans le doute j'ai mis une garde quand il est à 0 pour éviter de spammer les event à chaque frame
+        if (!IsRunning || _minToRealTime == 0)
         {
-            if (minToRealTime < 0) //Time steps backward
-            {
-                Minutes--;
-            }
-            else //Time steps forwards
-            {
-                Minutes++;
-            }
-            
+            return;
+        }
+
+        _timer -= Time.deltaTime;
+
+        if(_timer <= 0)
+        {
+            Minutes += Math.Sign(_minToRealTime); // (Manu) Juste pour simplifier le if-else du code d'origine
             OnMinutesChanged?.Invoke();
-            
-            if (Minutes >= 60)
+
+            if(Minutes >= 60)
             {
-                Hours++;
                 Minutes = 0;
 
-                if (Hours >= 24)
+                Hours++;
+                if(Hours >= 24)
                 {
                     Hours = 0;
                 }
                 OnHoursChanged?.Invoke();
             }
-            else if (Minutes < 0)
+            else if(Minutes < 0)
             {
-                Hours--;
                 Minutes = 59;
 
-                if (Hours < 0)
+                Hours--;
+                if(Hours < 0)
                 {
                     Hours = 23;
                 }
                 OnHoursChanged?.Invoke();
             }
-            timer = Math.Abs(minToRealTime);
+
+            _timer = Math.Abs(_minToRealTime);
         }
     }
 }
