@@ -15,9 +15,19 @@ public class PatrollingCharacter : TimeUser
         _rigibody = GetComponent<Rigidbody>();
     }
 
+    public override void SetConnected(bool isConnected)
+    {
+        base.SetConnected(isConnected);
+
+        if (!isConnected)
+        {
+            _rigibody.velocity = Vector3.zero;
+        }
+    }
+
     protected override void ProcessAction()
     {
-        _rigibody.velocity = _velocity * transform.right;
+        _rigibody.MovePosition(transform.position + _velocity * Time.deltaTime * transform.right);
         if (Vector3.Distance(transform.position, _endPosition) < 0.1f)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);

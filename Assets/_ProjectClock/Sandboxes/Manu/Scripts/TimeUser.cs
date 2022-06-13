@@ -5,9 +5,22 @@ using UnityEngine;
 public abstract class TimeUser : MonoBehaviour
 {
     [SerializeField] protected bool _isConnected = true;
-    [SerializeField] protected Transform _connectionPoint;
+    [SerializeField] protected Transform _connectionAnchor;
 
-    public Transform ConnectionPoint => _connectionPoint;
+    public Transform ConnectionAnchor => _connectionAnchor;
+
+    private void Start()
+    {
+        if(_isConnected)
+        {
+            TimeManager.OnMinutesChanged += ProcessAction;
+        }
+    }
+
+    private void OnDisable()
+    {
+        SetConnected(false);
+    }
 
     private void FixedUpdate()
     {
@@ -17,9 +30,18 @@ public abstract class TimeUser : MonoBehaviour
         }
     }
 
-    public void SetConnected(bool isConnected)
+    public virtual void SetConnected(bool isConnected)
     {
         _isConnected = isConnected;
+
+        if(isConnected)
+        {
+            TimeManager.OnMinutesChanged += ProcessAction;
+        }
+        else
+        {
+            TimeManager.OnMinutesChanged -= ProcessAction;
+        }
     }
 
     protected abstract void ProcessAction();

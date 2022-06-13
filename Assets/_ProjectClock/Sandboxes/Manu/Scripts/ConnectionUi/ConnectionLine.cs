@@ -82,6 +82,11 @@ public class ConnectionLine : MonoBehaviour
         _lineImage.enabled = false;
     }
 
+    public void UpdateDisplay()
+    {
+        DrawLine();
+    }
+
     private void DrawLine()
     {
         if (PointA == null || PointB == null)

@@ -15,6 +15,16 @@ public class TimeManager : MonoBehaviour
     public static int Minutes { get; private set; }
     public static int Hours { get; private set; }
 
+    private void OnEnable()
+    {
+        ConnectionUi.OnToggleDisplay += OnConnectUiDisplay;
+    }
+
+    private void OnDisable()
+    {
+        ConnectionUi.OnToggleDisplay -= OnConnectUiDisplay;
+    }
+
     private void Start()
     {
         StartTimer();
@@ -81,5 +91,10 @@ public class TimeManager : MonoBehaviour
 
             _timer = Math.Abs(_minToRealTime);
         }
+    }
+
+    private void OnConnectUiDisplay(bool isDisplayed)
+    {
+        SetTimerRunning(!isDisplayed);
     }
 }

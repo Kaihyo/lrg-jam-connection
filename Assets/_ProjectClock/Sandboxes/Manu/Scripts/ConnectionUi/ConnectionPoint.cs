@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public enum ConnectionPointType
 {
@@ -13,9 +14,14 @@ public enum ConnectionPointType
 public class ConnectionPoint : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     [SerializeField] private ConnectionPointType _type;
+    [Header("UI")]
+    [SerializeField] private Sprite _disconnectedSprite;
+    [SerializeField] private Sprite _connectedSprite;
+    [SerializeField] private Color _disconnectedColor, _connectedColor;
 
     private CanvasGroup _canvasGroup;
-    private TimeUser _target;
+    private Image _image;
+    
 
     public static Action<ConnectionPoint> OnStartConnection;
     public static Action<ConnectionPoint> OnEndConnection;
@@ -24,23 +30,24 @@ public class ConnectionPoint : MonoBehaviour, IPointerDownHandler, IBeginDragHan
 
     public ConnectionPointType Type => _type;
     public RectTransform RectTransform { get; private set; }
-    public ConnectionLine ConnectionLine { get; private set; }
+    public ConnectionLine ConnectLine { get; private set; }
+    public TimeUser Target { get; private set; }
 
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
-        RectTransform = GetComponent<RectTransform>();
-        ConnectionLine = null;
+        _image = GetComponent<Image>();
+        RectTransform = transform as RectTransform;
+
+        ConnectLine = null;
     }
 
-    public void DisableRaycasts()
+    public void SetTarget(TimeUser target, bool forceVisibility = false)
     {
-        _canvasGroup.blocksRaycasts = false;
-    }
+        Target = target;
 
-    public void SetTarget(TimeUser target)
-    {
-        _target = target;
+        _canvasGroup.alpha = (!forceVisibility && target == null) ? 0 : 1;
+        _canvasGroup.blocksRaycasts = (target == null) ? false : true;
     }
 
     public void SetType(ConnectionPointType type)
@@ -52,23 +59,27 @@ public class ConnectionPoint : MonoBehaviour, IPointerDownHandler, IBeginDragHan
     {
         if (Type == ConnectionPointType.TimeUser)
         {
-            _target.SetConnected(true);
+            Target.SetConnected(true);
         }
-        ConnectionLine = connectionLine;
+        ConnectLine = connectionLine;
+        _image.sprite = _connectedSprite;
+        _image.color = _connectedColor;
     }
 
     public void Disconnect()
     {
         if (Type == ConnectionPointType.TimeUser)
         {
-            _target.SetConnected(false);
+            Target.SetConnected(false);
         }
-        ConnectionLine = null;
+        ConnectLine = null;
+        _image.sprite = _disconnectedSprite;
+        _image.color = _disconnectedColor;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (ConnectionLine != null)
+        if (ConnectLine != null)
         {
             OnRemovingConnection?.Invoke(this);
         }
