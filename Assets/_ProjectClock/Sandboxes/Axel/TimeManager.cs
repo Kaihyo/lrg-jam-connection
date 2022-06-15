@@ -5,7 +5,7 @@ public class TimeManager : MonoBehaviour
 {
     // (Axel) Probablement quelque chose du genre 1 min IG = 0.5s IRL
     [SerializeField] private float[] _minToRealTime = new float[]{-0.05f,-0.1f,-0.5f,-1f,1f,0.5f,0.1f,0.05f};
-    [SerializeField] private int indexTimeSpeed = 4;
+    [SerializeField] [Range(0,7)] private int indexTimeSpeed = 4;
 
     private float _timer;
 
@@ -44,11 +44,13 @@ public class TimeManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            
+            if(indexTimeSpeed<7)
+                indexTimeSpeed++;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            
+            if(indexTimeSpeed>0)
+                indexTimeSpeed--;
         }
     }
 
