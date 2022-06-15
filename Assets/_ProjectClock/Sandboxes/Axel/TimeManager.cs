@@ -11,7 +11,10 @@ public class TimeManager : MonoBehaviour
 
     public static Action OnMinutesChanged;
     public static Action OnHoursChanged;
-
+    
+    // Des trucs pour l'affichage du selecteur
+    public RectTransform TimeSelectorGraphics;
+    private float[] angleToRotate= new float[]{90f,67.5f,45f,22.5f,-22.5f,-45f,-67.5f,-90};
     public static bool IsRunning { get; private set; }
     public static int Minutes { get; private set; }
     public static int Hours { get; private set; }
@@ -40,17 +43,34 @@ public class TimeManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))
         {
             SetTimerRunning(!IsRunning);
+            if(!IsRunning)
+                TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, 0);
+            else 
+                TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, angleToRotate[indexTimeSpeed]);
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if(indexTimeSpeed<7)
-                indexTimeSpeed++;
+            if (indexTimeSpeed < 7)
+            {
+                if (IsRunning)
+                {
+                    indexTimeSpeed++;
+                    TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, angleToRotate[indexTimeSpeed]);
+                }
+            }
+
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if(indexTimeSpeed>0)
-                indexTimeSpeed--;
+            if (indexTimeSpeed > 0)
+            {
+                if (IsRunning)
+                {
+                    indexTimeSpeed--;
+                    TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, angleToRotate[indexTimeSpeed]);
+                }
+            }
         }
     }
 
