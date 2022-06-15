@@ -4,7 +4,8 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     // (Axel) Probablement quelque chose du genre 1 min IG = 0.5s IRL
-    [SerializeField] private float _minToRealTime = 0.5f;
+    [SerializeField] private float[] _minToRealTime = new float[]{-0.05f,-0.1f,-0.5f,-1f,1f,0.5f,0.1f,0.05f};
+    [SerializeField] private int indexTimeSpeed = 4;
 
     private float _timer;
 
@@ -14,7 +15,9 @@ public class TimeManager : MonoBehaviour
     public static bool IsRunning { get; private set; }
     public static int Minutes { get; private set; }
     public static int Hours { get; private set; }
-
+    
+    //(Axel) Pour exporter le sens d'ecoulement tu temps
+    public static int TickingSign { get; private set; }
     private void OnEnable()
     {
         ConnectionUi.OnToggleDisplay += OnConnectUiDisplay;
@@ -33,12 +36,26 @@ public class TimeManager : MonoBehaviour
     private void Update()
     {
         ProcessTime();
+        
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            SetTimerRunning(!IsRunning);
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            
+        }
     }
 
     // (Manu) Je le passe en fonction si jamais on veut qu'un composant externe ait la main sur le lancement du temps
     public void StartTimer()
     {
-        _timer = Math.Abs(_minToRealTime);
+        _timer = Math.Abs(_minToRealTime[indexTimeSpeed]);
         Minutes = 0;
         Hours = 0;
         IsRunning = true;
@@ -52,9 +69,9 @@ public class TimeManager : MonoBehaviour
 
     private void ProcessTime()
     {
-        // (Manu) J'étais pas sûr du comportement qu'on voulait pour le _minToRealTime
-        // Dans le doute j'ai mis une garde quand il est à 0 pour éviter de spammer les event à chaque frame
-        if (!IsRunning || _minToRealTime == 0)
+        // (Manu) J'etais pas sur du comportement qu'on voulait pour le _minToRealTime
+        // Dans le doute j'ai mis une garde quand il est a 0 pour eviter de spammer les event a chaque frame
+        if (!IsRunning || _minToRealTime[indexTimeSpeed] == 0)
         {
             return;
         }
@@ -63,7 +80,8 @@ public class TimeManager : MonoBehaviour
 
         if(_timer <= 0)
         {
-            Minutes += Math.Sign(_minToRealTime); // (Manu) Juste pour simplifier le if-else du code d'origine
+            TickingSign = Math.Sign(_minToRealTime[indexTimeSpeed]);
+            Minutes += Math.Sign(_minToRealTime[indexTimeSpeed]); // (Manu) Juste pour simplifier le if-else du code d'origine
             OnMinutesChanged?.Invoke();
 
             if(Minutes >= 60)
@@ -89,7 +107,7 @@ public class TimeManager : MonoBehaviour
                 OnHoursChanged?.Invoke();
             }
 
-            _timer = Math.Abs(_minToRealTime);
+            _timer = Math.Abs(_minToRealTime[indexTimeSpeed]);
         }
     }
 

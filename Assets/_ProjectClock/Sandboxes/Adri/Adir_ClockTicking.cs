@@ -46,6 +46,8 @@ public class Adir_ClockTicking : MonoBehaviour
         if (ticking)
         {
             float ratio = -360.0f / 60.0f;
+            // (Axel) je rajoute ça pour que la clock puisse tick a l'envers
+            ratio *= TimeManager.TickingSign;
             arrow.Rotate(Vector3.forward, ratio);
         }
     }

@@ -7,7 +7,7 @@ using UnityEngine;
 public class Clock : MonoBehaviour
 {
 
-    public TextMeshProUGUI timeText;
+   // public TextMeshProUGUI timeText;
     
     // Start is called before the first frame update
     void OnEnable()
@@ -25,6 +25,7 @@ public class Clock : MonoBehaviour
     // Update is called once per frame
     private void UpdateTime()
     {
-        timeText.text = $"{TimeManager.Hours:00}:{TimeManager.Minutes:00}";
+    //   timeText.text = $"{TimeManager.Hours:00}:{TimeManager.Minutes:00}";
+        Debug.Log($"{TimeManager.Hours:00}:{TimeManager.Minutes:00}");
     }
 }
