@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
 {
@@ -14,7 +15,14 @@ public class TimeManager : MonoBehaviour
     
     // Des trucs pour l'affichage du selecteur
     public RectTransform TimeSelectorGraphics;
+    public Image selectorSprite;
+    public Sprite selectorRunning;
+    public Sprite selectorStop;
     private float[] angleToRotate= new float[]{90f,67.5f,45f,22.5f,-22.5f,-45f,-67.5f,-90};
+    
+    
+    
+    
     public static bool IsRunning { get; private set; }
     public static int Minutes { get; private set; }
     public static int Hours { get; private set; }
@@ -43,10 +51,18 @@ public class TimeManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))
         {
             SetTimerRunning(!IsRunning);
-            if(!IsRunning)
+
+            if (!IsRunning)
+            {
                 TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, 0);
-            else 
+                selectorSprite.sprite = selectorStop;
+            }
+            else
+            {
                 TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, angleToRotate[indexTimeSpeed]);
+                selectorSprite.sprite = selectorRunning;
+
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
