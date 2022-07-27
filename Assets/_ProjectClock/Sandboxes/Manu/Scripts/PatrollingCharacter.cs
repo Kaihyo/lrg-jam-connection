@@ -27,14 +27,31 @@ public class PatrollingCharacter : TimeUser
 
     protected override void ProcessAction()
     {
-        _rigibody.MovePosition(transform.position + _velocity * Time.deltaTime * transform.right);
-        if (Vector3.Distance(transform.position, _endPosition) < 0.1f)
+        float targetVelocity = _velocity * (1 / Mathf.Abs(TimeManager.Instance.CurrentTimeMod));
+        _rigibody.MovePosition(transform.position + _velocity * targetVelocity * Time.deltaTime * TimeManager.TickingSign * transform.right);
+
+        Debug.Log($"Distance to starting point : {Vector3.Distance(transform.position, _startPosition)}");
+        if (TimeManager.TickingSign > 0)
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            if (Vector3.Distance(transform.position, _endPosition) < 0.1f)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+            else if (Vector3.Distance(transform.position, _startPosition) < 0.1f)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
         }
-        else if (Vector3.Distance(transform.position, _startPosition) < 0.1f)
+        else if(TimeManager.TickingSign < 0)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (Vector3.Distance(_endPosition, transform.position) < 0.1f)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            else if (Vector3.Distance(_startPosition, transform.position) < 0.1f)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
         }
     }
 }

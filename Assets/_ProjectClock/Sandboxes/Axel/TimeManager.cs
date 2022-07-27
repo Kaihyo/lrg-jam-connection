@@ -3,9 +3,11 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+    private static TimeManager _instance;
+
     // (Axel) Probablement quelque chose du genre 1 min IG = 0.5s IRL
     [SerializeField] private float[] _minToRealTime = new float[]{-0.05f,-0.1f,-0.5f,-1f,1f,0.5f,0.1f,0.05f};
-    [SerializeField] [Range(0,7)] private int indexTimeSpeed = 4;
+    [SerializeField] [Range(0,5)] private int indexTimeSpeed = 3;
 
     private float _timer;
 
@@ -14,13 +16,17 @@ public class TimeManager : MonoBehaviour
     
     // Des trucs pour l'affichage du selecteur
     public RectTransform TimeSelectorGraphics;
-    private float[] angleToRotate= new float[]{90f,67.5f,45f,22.5f,-22.5f,-45f,-67.5f,-90};
+    private float[] angleToRotate= new float[]{67.5f,45f,22.5f,-22.5f,-45f,-67.5f};
     public static bool IsRunning { get; private set; }
     public static int Minutes { get; private set; }
     public static int Hours { get; private set; }
     
     //(Axel) Pour exporter le sens d'ecoulement tu temps
     public static int TickingSign { get; private set; }
+
+    public static TimeManager Instance => _instance;
+    public float CurrentTimeMod => _minToRealTime[indexTimeSpeed];
+
     private void OnEnable()
     {
         ConnectionUi.OnToggleDisplay += OnConnectUiDisplay;
@@ -31,6 +37,26 @@ public class TimeManager : MonoBehaviour
         ConnectionUi.OnToggleDisplay -= OnConnectUiDisplay;
     }
 
+    private void Awake()
+    {
+        if(_instance != null && _instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if(_instance == this)
+        {
+            _instance = null;
+        }
+    }
+
     private void Start()
     {
         StartTimer();
@@ -38,8 +64,6 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        ProcessTime();
-        
         if(Input.GetKeyDown(KeyCode.Space))
         {
             SetTimerRunning(!IsRunning);
@@ -51,7 +75,7 @@ public class TimeManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (indexTimeSpeed < 7)
+            if (indexTimeSpeed < 5)
             {
                 if (IsRunning)
                 {
@@ -59,7 +83,6 @@ public class TimeManager : MonoBehaviour
                     TimeSelectorGraphics.rotation = Quaternion.Euler(0, 0, angleToRotate[indexTimeSpeed]);
                 }
             }
-
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -72,6 +95,8 @@ public class TimeManager : MonoBehaviour
                 }
             }
         }
+
+        ProcessTime();
     }
 
     // (Manu) Je le passe en fonction si jamais on veut qu'un composant externe ait la main sur le lancement du temps

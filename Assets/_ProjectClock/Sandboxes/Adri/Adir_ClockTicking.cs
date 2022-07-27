@@ -21,7 +21,11 @@ public class Adir_ClockTicking : MonoBehaviour
     void Start()
     {
         TimeManager.OnMinutesChanged += UpdateTime;
-        line.SetObjects(obj01, obj02);
+
+        if (line != null)
+        {
+            line.SetObjects(obj01, obj02);
+        }
     }
 
     private void Update()
